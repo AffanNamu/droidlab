@@ -128,7 +128,11 @@ class ProjectWorkspaceRepository(
                         splitApkPaths = File(directory, "original").listFiles()
                             .orEmpty()
                             .filter { it.name.startsWith("split_") && it.extension == "apk" }
-                            .sortedBy { it.name }
+                            .sortedBy {
+                                it.name.removePrefix("split_")
+                                    .removeSuffix(".apk")
+                                    .toIntOrNull() ?: Int.MAX_VALUE
+                            }
                             .map(File::getAbsolutePath)
                     )
                 }.getOrNull()
