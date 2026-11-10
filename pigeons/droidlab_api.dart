@@ -35,6 +35,19 @@ class ExtractedPackageDto {
   late List<String> splitApkPaths;
 }
 
+class ProjectSummaryDto {
+  late String projectId;
+  late String name;
+  late String kind;
+  late String packageName;
+  String? versionName;
+  late int versionCode;
+  late int importedAtEpochMillis;
+  late int originalSizeBytes;
+  late int splitCount;
+  late String workspacePath;
+}
+
 class EngineCapabilityDto {
   late String id;
   late String displayName;
@@ -64,6 +77,9 @@ abstract class DroidLabHostApi {
 
   @async
   ExtractedPackageDto extractInstalledApp(String packageName);
+
+  @async
+  List<ProjectSummaryDto> listProjects();
 
   @async
   List<EngineCapabilityDto> getEngineCapabilities();
