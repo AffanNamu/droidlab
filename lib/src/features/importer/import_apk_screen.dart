@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 import '../../platform/droidlab_api.g.dart';
@@ -31,9 +33,9 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
   }
 
   Future<List<InstalledAppDto>> _loadApps() {
-    if (_selectedTab == 2) return Future<List<InstalledAppDto>>.value(
-      <InstalledAppDto>[],
-    );
+    if (_selectedTab == 2) {
+      return Future<List<InstalledAppDto>>.value(<InstalledAppDto>[]);
+    }
     return _api.listInstalledApps(_selectedTab == 0 ? 'user' : 'system');
   }
 
@@ -330,7 +332,10 @@ class _AppIcon extends StatelessWidget {
         child: iconBytes == null
             ? const ColoredBox(
                 color: DroidLabColors.elevated,
-                child: Icon(Icons.android_rounded, color: DroidLabColors.cyan),
+                child: Icon(
+                  Icons.android_rounded,
+                  color: DroidLabColors.cyan,
+                ),
               )
             : Image.memory(iconBytes!, fit: BoxFit.cover),
       ),
