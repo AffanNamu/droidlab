@@ -205,6 +205,17 @@ class ProjectWorkspaceRepository(
             throw IllegalArgumentException("Edited file exceeds the 2 MB editor limit.")
         }
 
+        val projectDirectory = safeProjectDirectory(projectId)
+        val checkpointRoot = File(projectDirectory, "checkpoints")
+        val checkpoint = File(
+            checkpointRoot,
+            "${relativePath}.${System.currentTimeMillis()}.bak"
+        )
+        if (!checkpoint.parentFile!!.exists() && !checkpoint.parentFile!!.mkdirs()) {
+            throw IOException("Could not create a file checkpoint.")
+        }
+        file.copyTo(checkpoint, overwrite = false)
+
         val temporary = File(file.parentFile, "${file.name}.droidlab.tmp")
         temporary.writeBytes(bytes)
         if (!temporary.renameTo(file)) {
