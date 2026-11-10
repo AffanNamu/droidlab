@@ -7,10 +7,11 @@ import com.droidlab.droidlab.engine.InstalledAppRepository
 import com.droidlab.droidlab.installation.InstallStatusReceiver
 import com.droidlab.droidlab.installation.PackageInstallCoordinator
 import java.io.File
+import java.util.UUID
 
 /**
  * Android implementation of the generated Pigeon host API.
- * Paths crossing this boundary must remain inside DroidLab's private files area.
+ * Import destinations are generated inside DroidLab's private files directory.
  */
 class DroidLabHostApiImpl(
     private val context: Context
@@ -40,21 +41,27 @@ class DroidLabHostApiImpl(
                 firstInstallTime = app.firstInstallTime
                 lastUpdateTime = app.lastUpdateTime
                 splitCount = app.splitCount
+                iconPng = app.iconPng
             }
         }
     }
 
     override suspend fun extractInstalledApp(
-        packageName: String,
-        destinationPath: String
+        packageName: String
     ): ExtractedPackageDto {
-        val destination = requirePrivatePath(destinationPath)
+        val projectId = UUID.randomUUID().toString()
+        val workspace = File(
+            context.filesDir,
+            "projects/$projectId/original"
+        )
         val extracted = appRepository.extractPackage(
             packageName = packageName,
-            destinationDirectory = destination
+            destinationDirectory = workspace
         )
         return ExtractedPackageDto().apply {
+            this.projectId = projectId
             this.packageName = extracted.packageName
+            workspacePath = workspace.absolutePath
             baseApkPath = extracted.baseApk.absolutePath
             splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
         }
