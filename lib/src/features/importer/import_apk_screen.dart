@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../platform/droidlab_api.g.dart';
 import '../../theme/droidlab_theme.dart';
@@ -20,11 +21,14 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
   final Set<String> _selectedPackages = <String>{};
   int _selectedTab = 0;
   bool _isImporting = false;
+  bool _consentChecked = false;
+  bool _inventoryConsentGranted = false;
 
   @override
   void initState() {
     super.initState();
-    _appsFuture = _loadApps();
+    _appsFuture = Future<List<InstalledAppDto>>.value(<InstalledAppDto>[]);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _ensureInventoryConsent());
   }
 
   @override
@@ -40,12 +44,68 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
     return _api.listInstalledApps(_selectedTab == 0 ? 'user' : 'system');
   }
 
+  Future<void> _ensureInventoryConsent() async {
+    if (_inventoryConsentGranted || !mounted) return;
+    final preferences = await SharedPreferences.getInstance();
+    final previouslyGranted =
+        preferences.getBool('package_inventory_disclosure_v1') ?? false;
+    if (previouslyGranted) {
+      if (!mounted) return;
+      setState(() {
+        _consentChecked = true;
+        _inventoryConsentGranted = true;
+        _appsFuture = _loadApps();
+      });
+      return;
+    }
+
+    if (!mounted) return;
+    final accepted = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Access installed app list?'),
+        content: const Text(
+          'DroidLab reads app names, package IDs, versions, sizes and icons from this device so you can choose an app to import. This inventory stays in DroidLab’s private local workspace and is not uploaded. You can still import an APK file without granting this access.',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Not now'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
+    if (accepted == true) {
+      await preferences.setBool('package_inventory_disclosure_v1', true);
+      if (!mounted) return;
+      setState(() {
+        _consentChecked = true;
+        _inventoryConsentGranted = true;
+        _appsFuture = _loadApps();
+      });
+    } else {
+      setState(() => _consentChecked = true);
+    }
+  }
+
   void _changeTab(int index) {
     setState(() {
       _selectedTab = index;
       _selectedPackages.clear();
-      _appsFuture = _loadApps();
+      _appsFuture = index == 2 || !_inventoryConsentGranted
+          ? Future<List<InstalledAppDto>>.value(<InstalledAppDto>[])
+          : _loadApps();
     });
+    if (index != 2 && !_inventoryConsentGranted) {
+      _ensureInventoryConsent();
+    }
   }
 
   Future<void> _pickApkFile() async {
@@ -123,7 +183,13 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
         actions: <Widget>[
           IconButton(
             tooltip: 'Refresh',
-            onPressed: () => setState(() => _appsFuture = _loadApps()),
+            onPressed: () {
+              if (_inventoryConsentGranted) {
+                setState(() => _appsFuture = _loadApps());
+              } else {
+                _ensureInventoryConsent();
+              }
+            },
             icon: const Icon(Icons.refresh_rounded),
           ),
         ],
@@ -249,6 +315,43 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
             'APK, APKS and XAPK file browsing will be connected to Android Storage Access Framework.',
             textAlign: TextAlign.center,
             style: TextStyle(color: DroidLabColors.mutedText),
+          ),
+        ),
+      );
+    }
+
+    if (!_consentChecked) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (!_inventoryConsentGranted) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Icon(
+                Icons.lock_outline_rounded,
+                color: DroidLabColors.cyan,
+                size: 36,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Installed app access is off',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'DroidLab has not read your app inventory. You can review the disclosure to enable the Installed Apps and System Apps lists.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: DroidLabColors.mutedText),
+              ),
+              const SizedBox(height: 14),
+              OutlinedButton(
+                onPressed: _ensureInventoryConsent,
+                child: const Text('Review disclosure'),
+              ),
+            ],
           ),
         ),
       );
