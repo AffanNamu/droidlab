@@ -35,6 +35,11 @@ if [[ ! -f android/app/build.gradle.kts && ! -f android/app/build.gradle ]]; the
   if [[ -f "$preserve_dir/AndroidManifest.xml" ]]; then
     cp "$preserve_dir/AndroidManifest.xml" android/app/src/main/AndroidManifest.xml
   fi
+  if [[ -f android/app/build.gradle.kts ]]; then
+    sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 26/' android/app/build.gradle.kts
+  elif [[ -f android/app/build.gradle ]]; then
+    sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 26/' android/app/build.gradle
+  fi
 else
   echo "Android Gradle project already exists; leaving generated files unchanged."
 fi
