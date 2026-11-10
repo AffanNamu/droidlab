@@ -15,6 +15,7 @@ DroidLab is an offline-first, Android-first application engineering studio. It i
 
 ## Target platform
 
+- Android application ID: `com.droidlab.app`.
 - Minimum Android version: **Android 8.0 (API 26)**.
 - UI: Flutter.
 - Native Android processing and package installation: Kotlin.
