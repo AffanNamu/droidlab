@@ -1,24 +1,26 @@
 # Development setup
 
 ## Prerequisites
-- Flutter stable SDK (pin the selected version in CI once the scaffold is generated).
+- Flutter stable SDK.
 - Android SDK platform/build-tools suitable for the development host.
 - JDK version required by the selected Android Gradle Plugin.
 - Android device or emulator on API 26 for minimum-version testing.
 - A current Android device/emulator for modern platform behavior.
 
 ## Initial setup
-The repository scaffold is being created. Once pubspec.yaml, platform files, and wrapper scripts are committed:
+Clone the repository and run the bootstrap script from the repository root:
 
 ```bash
 flutter --version
 flutter doctor -v
-flutter pub get
-dart format --output=none --set-exit-if-changed .
+bash scripts/bootstrap_android.sh
+dart format .
 flutter analyze
 flutter test
 flutter build apk --debug
 ```
+
+The bootstrap script generates the standard Android platform project if it is missing. The GitHub Actions workflow performs the same generation in its CI workspace. Review the generated application ID and Gradle configuration before release; generated platform files are not yet committed as a complete Android project.
 
 ## Working agreement
 - Keep main buildable.
