@@ -13,7 +13,8 @@ fi
 
 if [[ ! -f android/app/build.gradle.kts && ! -f android/app/build.gradle ]]; then
   preserve_dir="$(mktemp -d)"
-  trap 'rm -rf "$preserve_dir"' EXIT
+  template_dir="$(mktemp -d)"
+  trap 'rm -rf "$preserve_dir" "$template_dir"' EXIT
 
   if [[ -d android/app/src/main/kotlin/com/droidlab/droidlab ]]; then
     cp -R android/app/src/main/kotlin/com/droidlab/droidlab "$preserve_dir/kotlin"
@@ -22,7 +23,9 @@ if [[ ! -f android/app/build.gradle.kts && ! -f android/app/build.gradle ]]; the
     cp android/app/src/main/AndroidManifest.xml "$preserve_dir/AndroidManifest.xml"
   fi
 
-  flutter create --platforms=android --org=com.droidlab --project-name=droidlab .
+  flutter create --platforms=android --org=com.droidlab --project-name=droidlab "$template_dir"
+  rm -rf android
+  cp -R "$template_dir/android" ./android
 
   if [[ -d "$preserve_dir/kotlin" ]]; then
     rm -rf android/app/src/main/kotlin/com/droidlab/droidlab
