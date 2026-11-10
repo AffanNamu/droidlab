@@ -37,11 +37,13 @@
 - [ ] Explicit unsupported-format reporting
 
 ## Milestone 4 — Editing workspace
-- [ ] Mobile code editor with syntax highlighting
-- [ ] File explorer and tabs
-- [ ] Resource/manifest editors
-- [ ] Diff viewer and checkpoints
-- [ ] Search and safe file operations
+- [x] Basic mobile text editor for workspace files
+- [x] Workspace file explorer and directory navigation
+- [x] Safe file writes with checkpoints and path restrictions
+- [ ] Syntax highlighting and editor tabs
+- [ ] Resource/manifest specialized editors
+- [ ] Diff viewer and checkpoint restore
+- [ ] Search and replace
 
 ## Milestone 5 — Build, sign, verify, install
 - [ ] Rebuild pipeline
