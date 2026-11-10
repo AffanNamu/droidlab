@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.os.Build
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 
@@ -25,7 +29,8 @@ data class InstalledAppSummary(
     val enabled: Boolean,
     val firstInstallTime: Long,
     val lastUpdateTime: Long,
-    val splitCount: Int
+    val splitCount: Int,
+    val iconPng: ByteArray?
 )
 
 data class ExtractedPackageFiles(
@@ -74,7 +79,7 @@ class InstalledAppRepository(
                 val splitApks = applicationInfo.splitSourceDirs.orEmpty()
                     .map(::File)
                 val totalSize = (listOfNotNull(baseApk) + splitApks)
-                    .sumOf { file -> file.takeIf(File::isFile)?.length() ?: 0L }
+                    .sumOf { file -> file.takeIf { it.isFile }?.length() ?: 0L }
 
                 InstalledAppSummary(
                     packageName = applicationInfo.packageName,
@@ -88,7 +93,8 @@ class InstalledAppRepository(
                     enabled = applicationInfo.enabled,
                     firstInstallTime = packageInfo.firstInstallTime,
                     lastUpdateTime = packageInfo.lastUpdateTime,
-                    splitCount = splitApks.size
+                    splitCount = splitApks.size,
+                    iconPng = renderIconPng(applicationInfo)
                 )
             }
             .sortedBy { it.label.lowercase() }
@@ -139,6 +145,27 @@ class InstalledAppRepository(
             baseApk = baseOutput,
             splitApks = splitOutputs
         )
+    }
+
+    private fun renderIconPng(applicationInfo: ApplicationInfo): ByteArray? {
+        return runCatching {
+            val drawable = packageManager.getApplicationIcon(applicationInfo)
+            val size = 96
+            val bitmap = Bitmap.createBitmap(
+                size,
+                size,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, size, size)
+            drawable.draw(canvas)
+
+            ByteArrayOutputStream().use { output ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                bitmap.recycle()
+                output.toByteArray()
+            }
+        }.getOrNull()
     }
 
     @Suppress("DEPRECATION")
