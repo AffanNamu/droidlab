@@ -19,7 +19,9 @@ data class LocalProjectSummary(
     val importedAtEpochMillis: Long,
     val originalSizeBytes: Long,
     val splitCount: Int,
-    val workspacePath: String
+    val workspacePath: String,
+    val baseApkPath: String,
+    val splitApkPaths: List<String>
 )
 
 data class LocalWorkspaceFile(
@@ -90,7 +92,9 @@ class ProjectWorkspaceRepository(
             importedAtEpochMillis = importedAtEpochMillis,
             originalSizeBytes = totalBytes,
             splitCount = extracted.splitApks.size,
-            workspacePath = workspaceDirectory.absolutePath
+            workspacePath = workspaceDirectory.absolutePath,
+            baseApkPath = extracted.baseApk.absolutePath,
+            splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
         )
     }
 
@@ -119,7 +123,13 @@ class ProjectWorkspaceRepository(
                         importedAtEpochMillis = json.getLong("importedAtEpochMillis"),
                         originalSizeBytes = json.getLong("originalSizeBytes"),
                         splitCount = json.getInt("splitCount"),
-                        workspacePath = json.getString("workspacePath")
+                        workspacePath = json.getString("workspacePath"),
+                        baseApkPath = File(directory, "original/base.apk").absolutePath,
+                        splitApkPaths = File(directory, "original").listFiles()
+                            .orEmpty()
+                            .filter { it.name.startsWith("split_") && it.extension == "apk" }
+                            .sortedBy { it.name }
+                            .map(File::getAbsolutePath)
                     )
                 }.getOrNull()
             }
