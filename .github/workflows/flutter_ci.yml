@@ -26,8 +26,8 @@ jobs:
       - name: Generate clean Android platform scaffold
         run: |
           mkdir -p /tmp/droidlab-preserve
-          if [ -d android/app/src/main/kotlin/com/droidlab/droidlab ]; then
-            cp -R android/app/src/main/kotlin/com/droidlab/droidlab /tmp/droidlab-preserve/kotlin
+          if [ -d android/app/src/main/kotlin/com/droidlab/app ]; then
+            cp -R android/app/src/main/kotlin/com/droidlab/app /tmp/droidlab-preserve/kotlin
           fi
           if [ -f android/app/src/main/AndroidManifest.xml ]; then
             cp android/app/src/main/AndroidManifest.xml /tmp/droidlab-preserve/AndroidManifest.xml
@@ -36,9 +36,9 @@ jobs:
           rm -rf android
           cp -R /tmp/droidlab-platform/android ./android
           if [ -d /tmp/droidlab-preserve/kotlin ]; then
-            rm -rf android/app/src/main/kotlin/com/droidlab/droidlab
+            rm -rf android/app/src/main/kotlin/com/droidlab/app
             mkdir -p android/app/src/main/kotlin/com/droidlab
-            cp -R /tmp/droidlab-preserve/kotlin android/app/src/main/kotlin/com/droidlab/droidlab
+            cp -R /tmp/droidlab-preserve/kotlin android/app/src/main/kotlin/com/droidlab/app
           fi
           if [ -f /tmp/droidlab-preserve/AndroidManifest.xml ]; then
             cp /tmp/droidlab-preserve/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
