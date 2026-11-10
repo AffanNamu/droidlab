@@ -150,7 +150,7 @@ class InstalledAppRepository(
     private fun renderIconPng(applicationInfo: ApplicationInfo): ByteArray? {
         return runCatching {
             val drawable = packageManager.getApplicationIcon(applicationInfo)
-            val size = 96
+            val size = 64
             val bitmap = Bitmap.createBitmap(
                 size,
                 size,
