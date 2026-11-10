@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
@@ -22,10 +24,13 @@ class InstalledAppDto {
   late int firstInstallTime;
   late int lastUpdateTime;
   late int splitCount;
+  Uint8List? iconPng;
 }
 
 class ExtractedPackageDto {
+  late String projectId;
   late String packageName;
+  late String workspacePath;
   late String baseApkPath;
   late List<String> splitApkPaths;
 }
@@ -58,10 +63,7 @@ abstract class DroidLabHostApi {
   List<InstalledAppDto> listInstalledApps(String group);
 
   @async
-  ExtractedPackageDto extractInstalledApp(
-    String packageName,
-    String destinationPath,
-  );
+  ExtractedPackageDto extractInstalledApp(String packageName);
 
   @async
   List<EngineCapabilityDto> getEngineCapabilities();
