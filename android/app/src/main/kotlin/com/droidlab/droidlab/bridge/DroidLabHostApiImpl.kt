@@ -112,6 +112,44 @@ class DroidLabHostApiImpl(
         }
     }
 
+    override suspend fun listWorkspaceFiles(
+        projectId: String,
+        relativeDirectory: String
+    ): List<WorkspaceFileDto> {
+        return projectRepository.listWorkspaceFiles(
+            projectId,
+            relativeDirectory
+        ).map { file ->
+            WorkspaceFileDto().apply {
+                name = file.name
+                relativePath = file.relativePath
+                isDirectory = file.isDirectory
+                sizeBytes = file.sizeBytes
+                extension = file.extension
+            }
+        }
+    }
+
+    override suspend fun readWorkspaceFile(
+        projectId: String,
+        relativePath: String
+    ): String {
+        return projectRepository.readWorkspaceFile(projectId, relativePath)
+    }
+
+    override suspend fun writeWorkspaceFile(
+        projectId: String,
+        relativePath: String,
+        contents: String
+    ): Boolean {
+        projectRepository.writeWorkspaceFile(
+            projectId,
+            relativePath,
+            contents
+        )
+        return true
+    }
+
     override suspend fun getEngineCapabilities(): List<EngineCapabilityDto> {
         val canQueryPackages = runCatching {
             appRepository.listInstalledApps(InstalledAppGroup.ALL)
