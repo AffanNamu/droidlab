@@ -33,7 +33,7 @@ DroidLab is an offline-first, Android-first application engineering studio. It i
 3. Reconstruct Java for browsing where supported; edit Smali/DEX and decoded resources for bytecode-level changes.
 4. Validate changes and rebuild with compatible tools.
 5. Align, sign with a user-controlled key, and verify the output.
-6. Install through Android `PackageInstaller` with system/user confirmation.
+6. Install through Android PackageInstaller with system/user confirmation.
 7. Export or share the verified artifact.
 
 Decompiled Java is reconstructed output, not the original source. Obfuscation, native code, and framework-specific formats limit reconstruction. Flutter APKs do not yield the original Dart source through ordinary APK decompilation.
@@ -59,17 +59,32 @@ On-device Gradle builds are a major feasibility risk. The app must not promise a
 
 DroidLab has no account system and no mandatory network service. Core project data stays in the app's private workspace. Network access, if later added for optional update checks or dependency downloads, must be opt-in, documented, and unnecessary for local APK inspection/editing/install workflows.
 
+## Getting started
+
+Install Flutter stable and an Android SDK, clone the repository, then run:
+
+```bash
+bash scripts/bootstrap_android.sh
+flutter analyze
+flutter test
+flutter build apk --debug
+```
+
+The bootstrap script generates the standard Android platform project. Review the generated Android application ID and Gradle configuration before a release build.
+
 ## Repository status
 
-This repository is being initialized. The first milestone is the Flutter/Kotlin foundation, local workspace, import pipeline, capability diagnostics, job infrastructure, and device-tested feasibility probes for APK tooling. A green UI scaffold is not evidence that APK decompilation or on-device builds work; those engines require real-device verification.
+The initial Flutter home screen, product/engineering documentation, and CI workflow are committed. The current home screen is a foundation scaffold: import and tool actions are not functional yet. See [Project status](docs/PROJECT_STATUS.md) for the exact implementation state.
 
-See:
+## Documentation
+
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security](docs/SECURITY.md)
 - [Engine compatibility](docs/ENGINE_COMPATIBILITY.md)
 - [Roadmap](docs/ROADMAP.md)
 - [UI reference specification](docs/UI_REFERENCE.md)
 - [Development setup](docs/DEVELOPMENT.md)
+- [Project status](docs/PROJECT_STATUS.md)
 - [Decision records](docs/ADR/)
 
 ## Legal and responsible use
