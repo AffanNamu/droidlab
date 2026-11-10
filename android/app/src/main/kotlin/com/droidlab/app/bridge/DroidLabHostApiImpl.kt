@@ -132,6 +132,8 @@ class DroidLabHostApiImpl(
                 originalSizeBytes = project.originalSizeBytes
                 splitCount = project.splitCount
                 workspacePath = project.workspacePath
+                baseApkPath = project.baseApkPath
+                splitApkPaths = project.splitApkPaths
             }
         }
     }
