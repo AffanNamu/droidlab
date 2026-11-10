@@ -227,9 +227,21 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                                 trailing: const Icon(
                                   Icons.chevron_right_rounded,
                                 ),
-                                onTap: () => file.isDirectory
-                                    ? _openDirectory(file)
-                                    : _openFile(file),
+                                onTap: () {
+                                  if (file.isDirectory) {
+                                    _openDirectory(file);
+                                  } else if (_isTextExtension(file.extension)) {
+                                    _openFile(file);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'This file type is not editable in the text editor.',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
                               );
                             },
                           );
@@ -244,6 +256,28 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         ],
       ),
     );
+  }
+
+  static bool _isTextExtension(String extension) {
+    return const <String>{
+      'java',
+      'kt',
+      'kts',
+      'dart',
+      'smali',
+      'xml',
+      'json',
+      'yaml',
+      'yml',
+      'gradle',
+      'properties',
+      'txt',
+      'md',
+      'pro',
+      'html',
+      'css',
+      'js',
+    }.contains(extension);
   }
 
   static IconData _iconForExtension(String extension) {
