@@ -4,6 +4,8 @@ DroidLab does not require Google Sign-In, Firebase, a Google account, or a backe
 
 ## Package inventory visibility
 
+The Installed Apps and System Apps picker must show a prominent disclosure and obtain consent before it queries the installed-app inventory. Consent is stored locally on the device. Engine diagnostics must check permission declarations without enumerating installed packages before consent.
+
 Android 11 / API 30 and later filters which installed packages an app can see. DroidLab's full Installed Apps and System Apps picker needs broad package visibility to enumerate the device inventory, which may require QUERY_ALL_PACKAGES.
 
 This is a sensitive permission. Google Play restricts it to eligible core use cases and may require a Play Console declaration and review. The Play policy lists limited eligible categories; a developer tool must not assume approval. Before a Play release, reassess whether the full inventory picker qualifies and whether a narrower package visibility declaration can satisfy the user experience.
