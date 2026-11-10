@@ -24,7 +24,23 @@ jobs:
           cache: true
 
       - name: Generate Android platform scaffold
-        run: flutter create --platforms=android --org=com.droidlab --project-name=droidlab .
+        run: |
+          mkdir -p /tmp/droidlab-preserve
+          if [ -d android/app/src/main/kotlin/com/droidlab/droidlab ]; then
+            cp -R android/app/src/main/kotlin/com/droidlab/droidlab /tmp/droidlab-preserve/kotlin
+          fi
+          if [ -f android/app/src/main/AndroidManifest.xml ]; then
+            cp android/app/src/main/AndroidManifest.xml /tmp/droidlab-preserve/AndroidManifest.xml
+          fi
+          flutter create --platforms=android --org=com.droidlab --project-name=droidlab .
+          if [ -d /tmp/droidlab-preserve/kotlin ]; then
+            rm -rf android/app/src/main/kotlin/com/droidlab/droidlab
+            mkdir -p android/app/src/main/kotlin/com/droidlab
+            cp -R /tmp/droidlab-preserve/kotlin android/app/src/main/kotlin/com/droidlab/droidlab
+          fi
+          if [ -f /tmp/droidlab-preserve/AndroidManifest.xml ]; then
+            cp /tmp/droidlab-preserve/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          fi
 
       - name: Install dependencies
         run: flutter pub get
