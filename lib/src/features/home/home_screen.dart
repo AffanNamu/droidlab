@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../navigation/app_shell.dart';
 import '../../theme/droidlab_theme.dart';
+import '../importer/import_apk_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -75,7 +76,11 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.install_mobile_rounded,
                         title: 'Import APK',
                         subtitle: 'Inspect an app',
-                        onTap: () => _showNotReady(context, 'APK import'),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const ImportApkScreen(),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -143,7 +148,9 @@ class HomeScreen extends StatelessWidget {
 
   static void _showNotReady(BuildContext context, String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$feature is not available in this foundation build.')),
+      SnackBar(
+        content: Text('$feature is not available in this foundation build.'),
+      ),
     );
   }
 }
