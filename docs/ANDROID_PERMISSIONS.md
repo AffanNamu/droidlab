@@ -25,6 +25,10 @@ Android 8.0 and later requires the app to handle the user-enabled install-unknow
 
 REQUEST_INSTALL_PACKAGES is also restricted by Google Play policy. Its use must be directly related to the app's core purpose and satisfy the current policy and declaration requirements. Reassess this before publishing through Google Play.
 
+## Local-only storage
+
+The Android manifest sets `android:allowBackup="false"`. Project files, imported APKs, checkpoints, and signing-key material are intended to remain in app-private local storage and are not automatically included in Android cloud backup. Signing-key material must use `noBackupFilesDir` plus Android Keystore encryption.
+
 ## Storage
 
 Use Android Storage Access Framework for user-selected APKs, ZIPs, and export destinations. Do not request broad external storage access for normal import/export.
