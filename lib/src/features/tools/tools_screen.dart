@@ -7,15 +7,60 @@ class ToolsScreen extends StatelessWidget {
   const ToolsScreen({super.key});
 
   static const List<_ToolInfo> _tools = <_ToolInfo>[
-    _ToolInfo(Icons.android_rounded, 'APK Analyzer', 'Inspect package metadata'),
-    _ToolInfo(Icons.data_object_rounded, 'Decompiler', 'Reconstruct code for browsing'),
-    _ToolInfo(Icons.layers_rounded, 'Apktool', 'Decode resources and Smali'),
-    _ToolInfo(Icons.description_outlined, 'Manifest Editor', 'Inspect manifest entries'),
-    _ToolInfo(Icons.code_rounded, 'Smali Editor', 'Edit DEX-level instructions'),
-    _ToolInfo(Icons.palette_outlined, 'Resource Editor', 'Browse layouts and assets'),
-    _ToolInfo(Icons.build_outlined, 'Build & Compile', 'Rebuild supported projects'),
-    _ToolInfo(Icons.key_rounded, 'APK Signer', 'Manage signing keys securely'),
-    _ToolInfo(Icons.verified_outlined, 'APK Verifier', 'Verify signatures and integrity'),
+    _ToolInfo(
+      Icons.android_rounded,
+      'APK Analyzer',
+      'Inspect package metadata and archive structure',
+      'In progress',
+    ),
+    _ToolInfo(
+      Icons.data_object_rounded,
+      'Decompiler',
+      'Reconstruct code for browsing',
+      'Not connected',
+    ),
+    _ToolInfo(
+      Icons.layers_rounded,
+      'Apktool',
+      'Decode resources and Smali',
+      'Not connected',
+    ),
+    _ToolInfo(
+      Icons.description_outlined,
+      'Manifest Editor',
+      'Inspect and edit manifest entries',
+      'Planned',
+    ),
+    _ToolInfo(
+      Icons.code_rounded,
+      'Smali Editor',
+      'Edit DEX-level instructions',
+      'Planned',
+    ),
+    _ToolInfo(
+      Icons.palette_outlined,
+      'Resource Editor',
+      'Browse layouts and assets',
+      'Planned',
+    ),
+    _ToolInfo(
+      Icons.build_outlined,
+      'Build & Compile',
+      'Rebuild supported projects',
+      'Not connected',
+    ),
+    _ToolInfo(
+      Icons.key_rounded,
+      'APK Signer',
+      'Manage signing keys securely',
+      'Not connected',
+    ),
+    _ToolInfo(
+      Icons.verified_outlined,
+      'APK Verifier',
+      'Verify signatures and integrity',
+      'Not connected',
+    ),
   ];
 
   @override
@@ -66,6 +111,17 @@ class ToolsScreen extends StatelessWidget {
                           fontSize: 12,
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      Text(
+                        tool.status,
+                        style: TextStyle(
+                          color: tool.status == 'In progress'
+                              ? DroidLabColors.cyan
+                              : DroidLabColors.mutedText,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -79,9 +135,10 @@ class ToolsScreen extends StatelessWidget {
 }
 
 class _ToolInfo {
-  const _ToolInfo(this.icon, this.name, this.description);
+  const _ToolInfo(this.icon, this.name, this.description, this.status);
 
   final IconData icon;
   final String name;
   final String description;
+  final String status;
 }
