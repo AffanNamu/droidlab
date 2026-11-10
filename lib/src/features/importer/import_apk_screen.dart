@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../platform/droidlab_api.g.dart';
@@ -45,6 +46,43 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
       _selectedPackages.clear();
       _appsFuture = _loadApps();
     });
+  }
+
+  Future<void> _pickApkFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: <String>['apk'],
+      allowMultiple: false,
+      withData: false,
+    );
+    if (result == null || result.files.isEmpty) return;
+
+    final path = result.files.single.path;
+    if (path == null || path.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('The selected APK file could not be accessed.')),
+      );
+      return;
+    }
+
+    setState(() => _isImporting = true);
+    try {
+      final imported = await _api.importApkFile(path);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Imported ${imported.packageName} into Projects.'),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('APK import failed: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _isImporting = false);
+    }
   }
 
   Future<void> _importSelected() async {
@@ -157,15 +195,9 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
           children: <Widget>[
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: _selectedTab == 2
-                    ? null
-                    : () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'APK file browsing is the next import step.',
-                            ),
-                          ),
-                        ),
+                onPressed: _selectedTab == 2 && !_isImporting
+                    ? _pickApkFile
+                    : null,
                 icon: const Icon(Icons.folder_open_rounded),
                 label: const Text('Import from File'),
               ),
