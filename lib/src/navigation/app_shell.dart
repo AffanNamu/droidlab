@@ -17,11 +17,12 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
   int _projectsRefreshToken = 0;
+  int _workspaceRefreshToken = 0;
 
   List<Widget> get _screens => <Widget>[
         const HomeScreen(),
         ProjectsScreen(key: ValueKey<int>(_projectsRefreshToken)),
-        const WorkspaceScreen(),
+        WorkspaceScreen(key: ValueKey<int>(_workspaceRefreshToken)),
         const ToolsScreen(),
         const SettingsScreen(),
       ];
@@ -39,6 +40,7 @@ class _AppShellState extends State<AppShell> {
           setState(() {
             _selectedIndex = index;
             if (index == 1) _projectsRefreshToken++;
+            if (index == 2) _workspaceRefreshToken++;
           });
         },
         destinations: const <NavigationDestination>[
