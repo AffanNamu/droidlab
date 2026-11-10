@@ -6,6 +6,7 @@ import com.droidlab.droidlab.engine.InstalledAppGroup
 import com.droidlab.droidlab.engine.InstalledAppRepository
 import com.droidlab.droidlab.installation.InstallStatusReceiver
 import com.droidlab.droidlab.installation.PackageInstallCoordinator
+import com.droidlab.droidlab.storage.ApkFileImportRepository
 import com.droidlab.droidlab.storage.ProjectWorkspaceRepository
 import java.io.File
 import java.util.UUID
@@ -20,6 +21,10 @@ class DroidLabHostApiImpl(
 
     private val appRepository = InstalledAppRepository(context)
     private val projectRepository = ProjectWorkspaceRepository(context)
+    private val apkFileImportRepository = ApkFileImportRepository(
+        context,
+        projectRepository
+    )
     private val installCoordinator = PackageInstallCoordinator(context)
 
     override suspend fun listInstalledApps(group: String): List<InstalledAppDto> {
@@ -73,6 +78,17 @@ class DroidLabHostApiImpl(
         return ExtractedPackageDto().apply {
             this.projectId = project.projectId
             this.packageName = project.packageName
+            workspacePath = project.workspacePath
+            baseApkPath = extracted.baseApk.absolutePath
+            splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
+        }
+    }
+
+    override suspend fun importApkFile(sourcePath: String): ExtractedPackageDto {
+        val (project, extracted) = apkFileImportRepository.importApk(sourcePath)
+        return ExtractedPackageDto().apply {
+            projectId = project.projectId
+            packageName = project.packageName
             workspacePath = project.workspacePath
             baseApkPath = extracted.baseApk.absolutePath
             splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
