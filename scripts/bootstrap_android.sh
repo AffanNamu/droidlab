@@ -23,7 +23,7 @@ if [[ ! -f android/app/build.gradle.kts && ! -f android/app/build.gradle ]]; the
     cp android/app/src/main/AndroidManifest.xml "$preserve_dir/AndroidManifest.xml"
   fi
 
-  flutter create --platforms=android --org=com.droidlab --project-name=droidlab "$template_dir"
+  flutter create --platforms=android --org=com.droidlab --project-name=app "$template_dir"
   rm -rf android
   cp -R "$template_dir/android" ./android
 
