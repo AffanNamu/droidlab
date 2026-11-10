@@ -50,7 +50,7 @@ class DroidLabHostApiImpl(
                 enabled = app.enabled
                 firstInstallTime = app.firstInstallTime
                 lastUpdateTime = app.lastUpdateTime
-                splitCount = app.splitCount
+                splitCount = app.splitCount.toLong()
                 iconPng = app.iconPng
             }
         }
@@ -105,8 +105,8 @@ class DroidLabHostApiImpl(
             applicationName = analysis.applicationName
             versionName = analysis.versionName
             versionCode = analysis.versionCode
-            minSdk = analysis.minSdk
-            targetSdk = analysis.targetSdk
+            minSdk = analysis.minSdk.toLong()
+            targetSdk = analysis.targetSdk.toLong()
             fileSizeBytes = analysis.fileSizeBytes
             requestedPermissions = analysis.requestedPermissions
             dexFiles = analysis.dexFiles
@@ -130,7 +130,7 @@ class DroidLabHostApiImpl(
                 versionCode = project.versionCode
                 importedAtEpochMillis = project.importedAtEpochMillis
                 originalSizeBytes = project.originalSizeBytes
-                splitCount = project.splitCount
+                splitCount = project.splitCount.toLong()
                 workspacePath = project.workspacePath
                 baseApkPath = project.baseApkPath
                 splitApkPaths = project.splitApkPaths
@@ -255,9 +255,9 @@ class DroidLabHostApiImpl(
         val files = apkPaths.map(::requirePrivatePath)
         val session = installCoordinator.startInstall(files, jobId)
         return InstallSessionDto().apply {
-            sessionId = session.sessionId
+            sessionId = session.sessionId.toLong()
             packageName = session.packageName
-            apkCount = session.apkCount
+            apkCount = session.apkCount.toLong()
         }
     }
 
@@ -266,7 +266,7 @@ class DroidLabHostApiImpl(
         val status = InstallStatusReceiver.readStatus(context, jobId) ?: return null
         return InstallStatusDto().apply {
             this.jobId = status.jobId
-            statusCode = status.statusCode
+            statusCode = status.statusCode.toLong()
             statusMessage = status.statusMessage
             updatedAtEpochMillis = status.updatedAtEpochMillis
         }
