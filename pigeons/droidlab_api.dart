@@ -79,6 +79,9 @@ abstract class DroidLabHostApi {
   ExtractedPackageDto extractInstalledApp(String packageName);
 
   @async
+  ExtractedPackageDto importApkFile(String sourcePath);
+
+  @async
   List<ProjectSummaryDto> listProjects();
 
   @async
