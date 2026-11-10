@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
+import android.util.Base64
 import android.util.Log
 
 data class InstallStatusSnapshot(
@@ -72,8 +73,13 @@ class InstallStatusReceiver : BroadcastReceiver() {
         private const val TAG = "DroidLabInstaller"
         private const val PREFERENCES = "droidlab_install_status"
 
-        private fun keyPrefix(jobId: String): String =
-            "job_${jobId.hashCode()}_"
+        private fun keyPrefix(jobId: String): String {
+            val encoded = Base64.encodeToString(
+                jobId.toByteArray(Charsets.UTF_8),
+                Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
+            )
+            return "job_${encoded}_"
+        }
 
         fun readStatus(
             context: Context,
