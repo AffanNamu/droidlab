@@ -18,4 +18,6 @@ else
 fi
 
 flutter pub get
-echo "Android platform bootstrap complete. Review the generated application ID and Android Gradle Plugin before release."
+dart run pigeon --input pigeons/droidlab_api.dart
+dart format lib pigeons
+echo "Android platform and typed bridge bootstrap complete. Review the generated application ID and Gradle configuration before release."
