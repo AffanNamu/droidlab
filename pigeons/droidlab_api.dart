@@ -48,6 +48,14 @@ class ProjectSummaryDto {
   late String workspacePath;
 }
 
+class WorkspaceFileDto {
+  late String name;
+  late String relativePath;
+  late bool isDirectory;
+  late int sizeBytes;
+  late String extension;
+}
+
 class EngineCapabilityDto {
   late String id;
   late String displayName;
@@ -83,6 +91,22 @@ abstract class DroidLabHostApi {
 
   @async
   List<ProjectSummaryDto> listProjects();
+
+  @async
+  List<WorkspaceFileDto> listWorkspaceFiles(
+    String projectId,
+    String relativeDirectory,
+  );
+
+  @async
+  String readWorkspaceFile(String projectId, String relativePath);
+
+  @async
+  bool writeWorkspaceFile(
+    String projectId,
+    String relativePath,
+    String contents,
+  );
 
   @async
   List<EngineCapabilityDto> getEngineCapabilities();
