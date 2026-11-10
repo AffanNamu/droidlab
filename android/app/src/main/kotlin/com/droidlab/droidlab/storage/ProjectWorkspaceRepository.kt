@@ -37,7 +37,6 @@ class ProjectWorkspaceRepository(
         importedAtEpochMillis: Long = System.currentTimeMillis()
     ): LocalProjectSummary {
         val projectDirectory = safeProjectDirectory(projectId)
-        val originalDirectory = File(projectDirectory, "original")
         val workspaceDirectory = File(projectDirectory, "workspace")
         val outputsDirectory = File(projectDirectory, "outputs")
 
@@ -54,7 +53,7 @@ class ProjectWorkspaceRepository(
             .put("name", app.label)
             .put("kind", "installed_apk")
             .put("packageName", app.packageName)
-            .put("versionName", app.versionName)
+            .put("versionName", app.versionName ?: JSONObject.NULL)
             .put("versionCode", app.versionCode)
             .put("importedAtEpochMillis", importedAtEpochMillis)
             .put("originalSizeBytes", totalBytes)
@@ -101,7 +100,11 @@ class ProjectWorkspaceRepository(
                         name = json.getString("name"),
                         kind = json.getString("kind"),
                         packageName = json.getString("packageName"),
-                        versionName = json.optString("versionName").takeIf(String::isNotEmpty),
+                        versionName = if (json.isNull("versionName")) {
+                            null
+                        } else {
+                            json.getString("versionName")
+                        },
                         versionCode = json.getLong("versionCode"),
                         importedAtEpochMillis = json.getLong("importedAtEpochMillis"),
                         originalSizeBytes = json.getLong("originalSizeBytes"),
