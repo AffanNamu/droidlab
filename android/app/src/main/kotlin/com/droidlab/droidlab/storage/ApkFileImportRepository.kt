@@ -28,6 +28,11 @@ class ApkFileImportRepository(
 
         val packageInfo = readArchivePackageInfo(source)
             ?: throw IllegalArgumentException("The selected file is not a valid APK.")
+        if (!packageInfo.splitNames.isNullOrEmpty()) {
+            throw IllegalArgumentException(
+                "This is a split APK part. Import the complete APKS/XAPK set instead."
+            )
+        }
         val applicationInfo = packageInfo.applicationInfo
             ?: throw IllegalArgumentException("APK application metadata is missing.")
         applicationInfo.sourceDir = source.absolutePath
@@ -70,7 +75,8 @@ class ApkFileImportRepository(
         val project = projectRepository.recordInstalledPackage(
             projectId = projectId,
             app = appSummary,
-            extracted = extracted
+            extracted = extracted,
+            kind = "apk_file"
         )
         return project to extracted
     }
