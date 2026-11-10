@@ -7,14 +7,21 @@ import android.content.pm.PackageInstaller
 import android.os.Build
 import android.util.Log
 
+data class InstallStatusSnapshot(
+    val jobId: String,
+    val statusCode: Int,
+    val statusMessage: String,
+    val updatedAtEpochMillis: Long
+)
+
 /**
- * Receives the result of a PackageInstaller session. Pending user confirmation is
- * forwarded to Android's installer UI; final status is persisted for the app UI.
+ * Receives PackageInstaller results. Pending user confirmation is forwarded to
+ * Android's installer UI; each job's final status is persisted for polling.
  */
 class InstallStatusReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val jobId = intent.getStringExtra(PackageInstallCoordinator.EXTRA_JOB_ID)
-            ?: "unknown"
+            ?: return
         val status = intent.getIntExtra(
             PackageInstaller.EXTRA_STATUS,
             PackageInstaller.STATUS_FAILURE
@@ -23,6 +30,8 @@ class InstallStatusReceiver : BroadcastReceiver() {
             PackageInstaller.EXTRA_STATUS_MESSAGE
         ).orEmpty()
 
+        persistResult(context, jobId, status, message)
+
         if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
             val confirmationIntent = getConfirmationIntent(intent)
             if (confirmationIntent != null) {
@@ -30,15 +39,9 @@ class InstallStatusReceiver : BroadcastReceiver() {
                 runCatching { context.startActivity(confirmationIntent) }
                     .onFailure { error ->
                         Log.e(TAG, "Could not open Android install confirmation", error)
-                        persistResult(context, jobId, status, message)
                     }
-            } else {
-                persistResult(context, jobId, status, message)
             }
-            return
         }
-
-        persistResult(context, jobId, status, message)
     }
 
     @Suppress("DEPRECATION")
@@ -56,21 +59,48 @@ class InstallStatusReceiver : BroadcastReceiver() {
         status: Int,
         message: String
     ) {
+        val prefix = keyPrefix(jobId)
         context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
             .edit()
-            .putString(KEY_JOB_ID, jobId)
-            .putInt(KEY_STATUS, status)
-            .putString(KEY_MESSAGE, message)
-            .putLong(KEY_UPDATED_AT, System.currentTimeMillis())
+            .putInt("${prefix}status", status)
+            .putString("${prefix}message", message)
+            .putLong("${prefix}updated_at", System.currentTimeMillis())
             .apply()
     }
 
     companion object {
         private const val TAG = "DroidLabInstaller"
         private const val PREFERENCES = "droidlab_install_status"
-        private const val KEY_JOB_ID = "job_id"
-        private const val KEY_STATUS = "status"
-        private const val KEY_MESSAGE = "message"
-        private const val KEY_UPDATED_AT = "updated_at"
+
+        private fun keyPrefix(jobId: String): String =
+            "job_${jobId.hashCode()}_"
+
+        fun readStatus(
+            context: Context,
+            jobId: String
+        ): InstallStatusSnapshot? {
+            val preferences = context.getSharedPreferences(
+                PREFERENCES,
+                Context.MODE_PRIVATE
+            )
+            val prefix = keyPrefix(jobId)
+            if (!preferences.contains("${prefix}status")) return null
+
+            return InstallStatusSnapshot(
+                jobId = jobId,
+                statusCode = preferences.getInt(
+                    "${prefix}status",
+                    PackageInstaller.STATUS_FAILURE
+                ),
+                statusMessage = preferences.getString(
+                    "${prefix}message",
+                    ""
+                ).orEmpty(),
+                updatedAtEpochMillis = preferences.getLong(
+                    "${prefix}updated_at",
+                    0L
+                )
+            )
+        }
     }
 }
