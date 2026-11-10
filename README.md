@@ -80,6 +80,7 @@ The initial Flutter home screen, product/engineering documentation, and CI workf
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security](docs/SECURITY.md)
+- [Android permissions and distribution](docs/ANDROID_PERMISSIONS.md)
 - [Engine compatibility](docs/ENGINE_COMPATIBILITY.md)
 - [Roadmap](docs/ROADMAP.md)
 - [UI reference specification](docs/UI_REFERENCE.md)
