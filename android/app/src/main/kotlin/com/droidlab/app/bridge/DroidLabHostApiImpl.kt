@@ -1,8 +1,8 @@
 package com.droidlab.app.bridge
 
 import android.content.Context
-import android.os.Build
 import android.content.pm.PackageManager
+import android.os.Build
 import com.droidlab.app.engine.ApkInspector
 import com.droidlab.app.engine.InstalledAppGroup
 import com.droidlab.app.engine.InstalledAppRepository
@@ -39,20 +39,20 @@ class DroidLabHostApiImpl(
         }
 
         return appRepository.listInstalledApps(filter).map { app ->
-            InstalledAppDto().apply {
-                packageName = app.packageName
-                label = app.label
-                versionName = app.versionName
-                versionCode = app.versionCode
-                apkSizeBytes = app.apkSizeBytes
-                isSystemApp = app.isSystemApp
-                isUpdatedSystemApp = app.isUpdatedSystemApp
-                enabled = app.enabled
-                firstInstallTime = app.firstInstallTime
-                lastUpdateTime = app.lastUpdateTime
-                splitCount = app.splitCount.toLong()
+            InstalledAppDto(
+                packageName = app.packageName,
+                label = app.label,
+                versionName = app.versionName,
+                versionCode = app.versionCode,
+                apkSizeBytes = app.apkSizeBytes,
+                isSystemApp = app.isSystemApp,
+                isUpdatedSystemApp = app.isUpdatedSystemApp,
+                enabled = app.enabled,
+                firstInstallTime = app.firstInstallTime,
+                lastUpdateTime = app.lastUpdateTime,
+                splitCount = app.splitCount.toLong(),
                 iconPng = app.iconPng
-            }
+            )
         }
     }
 
@@ -79,13 +79,13 @@ class DroidLabHostApiImpl(
                 extracted = extracted
             )
 
-            return ExtractedPackageDto().apply {
-                this.projectId = project.projectId
-                this.packageName = project.packageName
-                workspacePath = project.workspacePath
-                baseApkPath = extracted.baseApk.absolutePath
+            return ExtractedPackageDto(
+                projectId = project.projectId,
+                packageName = project.packageName,
+                workspacePath = project.workspacePath,
+                baseApkPath = extracted.baseApk.absolutePath,
                 splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
-            }
+            )
         } catch (error: Exception) {
             File(context.filesDir, "projects/$projectId").deleteRecursively()
             throw error
@@ -94,52 +94,52 @@ class DroidLabHostApiImpl(
 
     override suspend fun importApkFile(sourcePath: String): ExtractedPackageDto {
         val (project, extracted) = apkFileImportRepository.importApk(sourcePath)
-        return ExtractedPackageDto().apply {
-            projectId = project.projectId
-            packageName = project.packageName
-            workspacePath = project.workspacePath
-            baseApkPath = extracted.baseApk.absolutePath
+        return ExtractedPackageDto(
+            projectId = project.projectId,
+            packageName = project.packageName,
+            workspacePath = project.workspacePath,
+            baseApkPath = extracted.baseApk.absolutePath,
             splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
-        }
+        )
     }
 
     override suspend fun inspectApk(apkPath: String): ApkAnalysisDto {
         val analysis = apkInspector.inspect(requirePrivatePath(apkPath))
-        return ApkAnalysisDto().apply {
-            packageName = analysis.packageName
-            applicationName = analysis.applicationName
-            versionName = analysis.versionName
-            versionCode = analysis.versionCode
-            minSdk = analysis.minSdk.toLong()
-            targetSdk = analysis.targetSdk.toLong()
-            fileSizeBytes = analysis.fileSizeBytes
-            requestedPermissions = analysis.requestedPermissions
-            dexFiles = analysis.dexFiles
-            nativeLibraries = analysis.nativeLibraries
-            assetFiles = analysis.assetFiles
-            hasManifest = analysis.hasManifest
-            hasResourcesTable = analysis.hasResourcesTable
-            signatureStatus = analysis.signatureStatus
+        return ApkAnalysisDto(
+            packageName = analysis.packageName,
+            applicationName = analysis.applicationName,
+            versionName = analysis.versionName,
+            versionCode = analysis.versionCode,
+            minSdk = analysis.minSdk.toLong(),
+            targetSdk = analysis.targetSdk.toLong(),
+            fileSizeBytes = analysis.fileSizeBytes,
+            requestedPermissions = analysis.requestedPermissions,
+            dexFiles = analysis.dexFiles,
+            nativeLibraries = analysis.nativeLibraries,
+            assetFiles = analysis.assetFiles,
+            hasManifest = analysis.hasManifest,
+            hasResourcesTable = analysis.hasResourcesTable,
+            signatureStatus = analysis.signatureStatus,
             signingCertificateSha256 = analysis.signingCertificateSha256
-        }
+        )
     }
 
     override suspend fun listProjects(): List<ProjectSummaryDto> {
         return projectRepository.listProjects().map { project ->
-            ProjectSummaryDto().apply {
-                projectId = project.projectId
-                name = project.name
-                kind = project.kind
-                packageName = project.packageName
-                versionName = project.versionName
-                versionCode = project.versionCode
-                importedAtEpochMillis = project.importedAtEpochMillis
-                originalSizeBytes = project.originalSizeBytes
-                splitCount = project.splitCount.toLong()
-                workspacePath = project.workspacePath
-                baseApkPath = project.baseApkPath
+            ProjectSummaryDto(
+                projectId = project.projectId,
+                name = project.name,
+                kind = project.kind,
+                packageName = project.packageName,
+                versionName = project.versionName,
+                versionCode = project.versionCode,
+                importedAtEpochMillis = project.importedAtEpochMillis,
+                originalSizeBytes = project.originalSizeBytes,
+                splitCount = project.splitCount.toLong(),
+                workspacePath = project.workspacePath,
+                baseApkPath = project.baseApkPath,
                 splitApkPaths = project.splitApkPaths
-            }
+            )
         }
     }
 
@@ -151,13 +151,13 @@ class DroidLabHostApiImpl(
             projectId,
             relativeDirectory
         ).map { file ->
-            WorkspaceFileDto().apply {
-                name = file.name
-                relativePath = file.relativePath
-                isDirectory = file.isDirectory
-                sizeBytes = file.sizeBytes
+            WorkspaceFileDto(
+                name = file.name,
+                relativePath = file.relativePath,
+                isDirectory = file.isDirectory,
+                sizeBytes = file.sizeBytes,
                 extension = file.extension
-            }
+            )
         }
     }
 
@@ -259,22 +259,22 @@ class DroidLabHostApiImpl(
         }
         val files = apkPaths.map(::requirePrivatePath)
         val session = installCoordinator.startInstall(files, jobId)
-        return InstallSessionDto().apply {
-            sessionId = session.sessionId.toLong()
-            packageName = session.packageName
+        return InstallSessionDto(
+            sessionId = session.sessionId.toLong(),
+            packageName = session.packageName,
             apkCount = session.apkCount.toLong()
-        }
+        )
     }
 
     override suspend fun getInstallStatus(jobId: String): InstallStatusDto? {
         if (jobId.isBlank()) return null
         val status = InstallStatusReceiver.readStatus(context, jobId) ?: return null
-        return InstallStatusDto().apply {
-            this.jobId = status.jobId
-            statusCode = status.statusCode.toLong()
-            statusMessage = status.statusMessage
+        return InstallStatusDto(
+            jobId = status.jobId,
+            statusCode = status.statusCode.toLong(),
+            statusMessage = status.statusMessage,
             updatedAtEpochMillis = status.updatedAtEpochMillis
-        }
+        )
     }
 
     private fun requirePrivatePath(path: String): File {
@@ -298,11 +298,13 @@ class DroidLabHostApiImpl(
         ready: Boolean,
         detail: String
     ): EngineCapabilityDto {
-        return EngineCapabilityDto().apply {
-            this.id = id
-            displayName = name
-            state = if (ready) "ready" else "missing"
-            this.detail = detail
-        }
+        return EngineCapabilityDto(
+            id = id,
+            displayName = name,
+            state = if (ready) "ready" else "missing",
+            version = null,
+            detail = detail,
+            detectedAbi = null
+        )
     }
 }
