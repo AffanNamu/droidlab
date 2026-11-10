@@ -63,6 +63,7 @@ class ApkAnalysisDto {
   late bool hasManifest;
   late bool hasResourcesTable;
   late String signatureStatus;
+  late List<String> signingCertificateSha256;
 }
 
 class WorkspaceFileDto {
