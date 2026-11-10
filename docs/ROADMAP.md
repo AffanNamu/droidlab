@@ -3,18 +3,22 @@
 ## Milestone 0 — Repository and product foundation
 - [x] Product README and principles
 - [x] Initial architecture, security, compatibility, and UI specifications
-- [ ] Flutter Android project scaffold
-- [ ] Kotlin bridge and API 26 baseline
-- [ ] CI and formatting/lint/test gates
+- [x] Flutter package manifest and app entry point
+- [x] Shared dark theme and five-tab navigation shell
+- [x] Initial Home, Projects, Workspace, Tools, and Settings screens
+- [x] Core project, capability, and job domain models
+- [x] Initial widget and job-state tests
+- [x] Android bootstrap script and Flutter CI workflow
+- [ ] Verify CI and commit a complete Android platform scaffold
 
 ## Milestone 1 — Local foundation
-- [ ] Riverpod and GoRouter app shell
+- [ ] Riverpod feature controllers and GoRouter route model
 - [ ] Drift database and migrations
 - [ ] App-private workspace manager
 - [ ] SAF APK and source ZIP import
 - [ ] Immutable originals, hashes, project records
-- [ ] Persistent job state machine
-- [ ] Engine diagnostics page
+- [ ] Persistent job repository and native job events
+- [ ] Engine diagnostics backed by native capability checks
 - [ ] Real-device smoke test on API 26 and current Android
 
 ## Milestone 2 — APK discovery and inspection
