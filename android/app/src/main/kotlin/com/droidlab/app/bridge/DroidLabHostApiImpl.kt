@@ -3,6 +3,7 @@ package com.droidlab.app.bridge
 import android.content.Context
 import android.os.Build
 import android.content.pm.PackageManager
+import com.droidlab.app.engine.ApkInspector
 import com.droidlab.app.engine.InstalledAppGroup
 import com.droidlab.app.engine.InstalledAppRepository
 import com.droidlab.app.installation.InstallStatusReceiver
@@ -21,6 +22,7 @@ class DroidLabHostApiImpl(
 ) : DroidLabHostApi {
 
     private val appRepository = InstalledAppRepository(context)
+    private val apkInspector = ApkInspector(context)
     private val projectRepository = ProjectWorkspaceRepository(context)
     private val apkFileImportRepository = ApkFileImportRepository(
         context,
@@ -93,6 +95,27 @@ class DroidLabHostApiImpl(
             workspacePath = project.workspacePath
             baseApkPath = extracted.baseApk.absolutePath
             splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
+        }
+    }
+
+    override suspend fun inspectApk(apkPath: String): ApkAnalysisDto {
+        val analysis = apkInspector.inspect(requirePrivatePath(apkPath))
+        return ApkAnalysisDto().apply {
+            packageName = analysis.packageName
+            applicationName = analysis.applicationName
+            versionName = analysis.versionName
+            versionCode = analysis.versionCode
+            minSdk = analysis.minSdk
+            targetSdk = analysis.targetSdk
+            fileSizeBytes = analysis.fileSizeBytes
+            requestedPermissions = analysis.requestedPermissions
+            dexFiles = analysis.dexFiles
+            nativeLibraries = analysis.nativeLibraries
+            assetFiles = analysis.assetFiles
+            hasManifest = analysis.hasManifest
+            hasResourcesTable = analysis.hasResourcesTable
+            signatureStatus = analysis.signatureStatus
+            signingCertificateSha256 = analysis.signingCertificateSha256
         }
     }
 
