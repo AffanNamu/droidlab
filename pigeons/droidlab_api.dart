@@ -6,9 +6,9 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartOut: 'lib/src/platform/droidlab_api.g.dart',
     kotlinOut:
-        'android/app/src/main/kotlin/com/droidlab/droidlab/bridge/DroidLabApi.g.kt',
+        'android/app/src/main/kotlin/com/droidlab/app/bridge/DroidLabApi.g.kt',
     kotlinOptions: KotlinOptions(
-      package: 'com.droidlab.droidlab.bridge',
+      package: 'com.droidlab.app.bridge',
     ),
   ),
 )
