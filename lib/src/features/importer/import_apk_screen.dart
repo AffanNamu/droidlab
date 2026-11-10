@@ -150,7 +150,27 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
                     'Choose an installed app or import an APK file into your private workspace.',
                     style: TextStyle(color: DroidLabColors.mutedText),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 9),
+                  const Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.lock_outline_rounded,
+                        size: 14,
+                        color: DroidLabColors.success,
+                      ),
+                      SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'App inventory is read locally on this device. Nothing is uploaded.',
+                          style: TextStyle(
+                            color: DroidLabColors.mutedText,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
                   SegmentedButton<int>(
                     segments: const <ButtonSegment<int>>[
                       ButtonSegment<int>(
