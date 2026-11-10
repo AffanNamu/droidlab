@@ -20,7 +20,7 @@ flutter test
 flutter build apk --debug
 ```
 
-The bootstrap script generates the standard Android platform project if it is missing. The GitHub Actions workflow performs the same generation in its CI workspace. Review the generated application ID and Gradle configuration before release; generated platform files are not yet committed as a complete Android project.
+The bootstrap script generates the standard Android platform project if it is missing. The GitHub Actions workflow performs the same generation in its CI workspace. The intended application ID is `com.droidlab.app`. Confirm the generated Gradle namespace/applicationId match it. Generated platform files are committed by the CI bootstrap job after a successful build.
 
 ## Working agreement
 - Keep main buildable.
