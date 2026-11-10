@@ -1,5 +1,6 @@
 package com.droidlab.app.bridge
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -182,11 +183,10 @@ class DroidLabHostApiImpl(
     }
 
     override suspend fun getEngineCapabilities(): List<EngineCapabilityDto> {
-        val canQueryPackages = runCatching {
-            context.packageManager.getInstalledApplications(
-                PackageManager.GET_META_DATA
-            )
-        }.isSuccess
+        val canQueryPackages = context.packageManager.checkPermission(
+            Manifest.permission.QUERY_ALL_PACKAGES,
+            context.packageName
+        ) == PackageManager.PERMISSION_GRANTED
         val installPermissionGranted = installCoordinator.canRequestInstallPackages()
         val installerSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
