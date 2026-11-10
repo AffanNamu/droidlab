@@ -78,10 +78,15 @@ jobs:
       - name: Commit generated Android and Pigeon sources
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "This workflow is stale; a newer main commit exists. Skipping generated-source commit."
+            exit 0
+          fi
           git add android lib/src/platform/droidlab_api.g.dart
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git config user.email "41898282+AffanNamu@users.noreply.github.com"
             git commit -m "chore: commit generated Android and Pigeon sources"
-            git push
+            git push origin HEAD:main
           fi
