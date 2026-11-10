@@ -80,6 +80,7 @@ The initial Flutter home screen, product/engineering documentation, and CI workf
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Build, sign, verify, and install](docs/BUILD_INSTALL.md)
 - [Security](docs/SECURITY.md)
 - [Android permissions and distribution](docs/ANDROID_PERMISSIONS.md)
 - [Engine compatibility](docs/ENGINE_COMPATIBILITY.md)
