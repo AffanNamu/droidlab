@@ -13,14 +13,16 @@ Last updated: 2026-11-10
 - ADRs for local-first product scope, Flutter/Kotlin boundary, and evidence-based engine readiness.
 - Flutter package manifest, lint configuration, ignore rules, Android bootstrap script, and GitHub Actions workflow.
 - Flutter app entry point, shared dark theme, and functional five-tab navigation shell.
-- Home dashboard with native engine capability diagnostics, Projects catalog, Workspace empty state, Tools catalog, and Settings catalog.
+- Home dashboard with native engine capability diagnostics, Projects catalog, Workspace file browser, Tools catalog, and Settings catalog.
 - Import APK screen with Installed Apps, System Apps, and APK Files tabs, search, multi-selection, app icons, package/version/size metadata, and extraction actions.
 - Single APK file selection through the Android Storage Access Framework-backed file picker.
+- Mobile text editor for workspace files, including save handling and unsaved-change confirmation.
 - Domain models for projects, engine capability states, and persistent job status transitions.
-- Typed Pigeon contract for installed-app discovery, installed-app extraction, single APK file import, project listing, engine capabilities, install permission, PackageInstaller sessions, and install status.
+- Typed Pigeon contract for installed-app discovery, installed-app extraction, single APK file import, project listing, workspace file browsing/editing, engine capabilities, install permission, PackageInstaller sessions, and install status.
 - Kotlin installed-app discovery and base/split APK extraction implementation.
 - Kotlin APK file import into a private project workspace.
 - Kotlin project catalog with per-project metadata and SHA-256 hashes for original APK files.
+- Kotlin workspace file access restricted to editable workspace paths, with text file allowlisting, size limits, symlink/path-traversal protection, and pre-save checkpoints.
 - Kotlin PackageInstaller session coordinator and per-job status receiver.
 - Kotlin Pigeon host API implementation and MainActivity registration source.
 - Initial widget test and job state-machine tests.
@@ -33,11 +35,11 @@ Last updated: 2026-11-10
 - Local Drift database; the first native project catalog currently uses per-project JSON metadata and must be migrated to the planned database.
 - APK inspector, JADX, Apktool, Smali, build/sign/verify engines.
 - PackageInstaller flow is implemented as a native coordinator but is not yet device-tested or exposed in the UI.
-- Functional code editor and real project file browsing.
+- Full syntax highlighting, editor tabs, search/replace, and project file creation.
 - Android source-project ZIP import and local Gradle build environment.
 
 ## Important truth
-DroidLab is not yet a release-ready APK editor. Installed-app discovery, APK extraction, single-APK file import, project metadata, and installation coordinator source are present but are not yet compiled or device-tested. Reverse engineering, rebuilding, signing, verification, and the full install workflow are not yet complete end-to-end. No engine is marked ready without native evidence.
+DroidLab is not yet a release-ready APK editor. Installed-app discovery, APK extraction, single-APK file import, project metadata, guarded workspace editing, and the installation coordinator are present as source implementations but are not yet compiled or device-tested. Reverse engineering, rebuilding, signing, verification, and the full install workflow are not yet complete end-to-end. No engine is marked ready without native evidence.
 
 ## Next implementation order
 1. Verify GitHub Actions generation, Flutter tests, and Android debug build.
@@ -46,4 +48,4 @@ DroidLab is not yet a release-ready APK editor. Installed-app discovery, APK ext
 4. Test Installed Apps/System Apps discovery and base/split extraction on API 26 and current Android.
 5. Finish APKS/XAPK handling and migrate project catalog to Drift.
 6. Test PackageInstaller new install, update, split install, cancellation, and permission handling.
-7. Add APK inspection, then validate decompile/rebuild tool feasibility.
+7. Integrate APK inspection and prove decode/rebuild on authorized sample apps.
