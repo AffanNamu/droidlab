@@ -16,14 +16,15 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
+  int _projectsRefreshToken = 0;
 
-  static const List<Widget> _screens = <Widget>[
-    HomeScreen(),
-    ProjectsScreen(),
-    WorkspaceScreen(),
-    ToolsScreen(),
-    SettingsScreen(),
-  ];
+  List<Widget> get _screens => <Widget>[
+        const HomeScreen(),
+        ProjectsScreen(key: ValueKey<int>(_projectsRefreshToken)),
+        const WorkspaceScreen(),
+        const ToolsScreen(),
+        const SettingsScreen(),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,10 @@ class _AppShellState extends State<AppShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
-          setState(() => _selectedIndex = index);
+          setState(() {
+            _selectedIndex = index;
+            if (index == 1) _projectsRefreshToken++;
+          });
         },
         destinations: const <NavigationDestination>[
           NavigationDestination(
