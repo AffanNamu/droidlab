@@ -117,6 +117,10 @@ class InstalledAppRepository(
         if (splitSources.any { !it.isFile }) {
             throw IOException("One or more split APK files are not readable")
         }
+        val totalSourceBytes = (listOf(baseSource) + splitSources).sumOf(File::length)
+        if (totalSourceBytes <= 0L || totalSourceBytes > MAX_PACKAGE_BYTES) {
+            throw IOException("Installed package exceeds the 2 GB extraction limit.")
+        }
 
         if (!destinationDirectory.exists() && !destinationDirectory.mkdirs()) {
             throw IOException("Could not create the private package workspace")
@@ -124,6 +128,9 @@ class InstalledAppRepository(
         val root = destinationDirectory.canonicalFile
         if (!root.isDirectory) {
             throw IOException("Package workspace is not a directory")
+        }
+        if (root.usableSpace < totalSourceBytes) {
+            throw IOException("Not enough free storage to copy this package.")
         }
 
         val baseOutput = File(root, "base.apk")
@@ -194,5 +201,9 @@ class InstalledAppRepository(
         } else {
             versionCode.toLong()
         }
+    }
+
+    companion object {
+        private const val MAX_PACKAGE_BYTES = 2L * 1024L * 1024L * 1024L
     }
 }
