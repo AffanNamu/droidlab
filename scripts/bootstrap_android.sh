@@ -12,7 +12,26 @@ if [[ ! -f pubspec.yaml ]]; then
 fi
 
 if [[ ! -f android/app/build.gradle.kts && ! -f android/app/build.gradle ]]; then
+  preserve_dir="$(mktemp -d)"
+  trap 'rm -rf "$preserve_dir"' EXIT
+
+  if [[ -d android/app/src/main/kotlin/com/droidlab/droidlab ]]; then
+    cp -R android/app/src/main/kotlin/com/droidlab/droidlab "$preserve_dir/kotlin"
+  fi
+  if [[ -f android/app/src/main/AndroidManifest.xml ]]; then
+    cp android/app/src/main/AndroidManifest.xml "$preserve_dir/AndroidManifest.xml"
+  fi
+
   flutter create --platforms=android --org=com.droidlab --project-name=droidlab .
+
+  if [[ -d "$preserve_dir/kotlin" ]]; then
+    rm -rf android/app/src/main/kotlin/com/droidlab/droidlab
+    mkdir -p android/app/src/main/kotlin/com/droidlab
+    cp -R "$preserve_dir/kotlin" android/app/src/main/kotlin/com/droidlab/droidlab
+  fi
+  if [[ -f "$preserve_dir/AndroidManifest.xml" ]]; then
+    cp "$preserve_dir/AndroidManifest.xml" android/app/src/main/AndroidManifest.xml
+  fi
 else
   echo "Android Gradle project already exists; leaving generated files unchanged."
 fi
