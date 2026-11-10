@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../navigation/app_shell.dart';
 import '../../platform/droidlab_api.g.dart';
 import '../../theme/droidlab_theme.dart';
+import 'project_details_screen.dart';
 
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
@@ -83,14 +84,23 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   separatorBuilder: (_, __) => const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final project = projects[index];
-                    return Container(
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: DroidLabColors.surface,
+                    return Material(
+                      color: DroidLabColors.surface,
+                      borderRadius: BorderRadius.circular(18),
+                      child: InkWell(
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: DroidLabColors.elevated),
-                      ),
-                      child: Row(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ProjectDetailsScreen(project: project),
+                          ),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: DroidLabColors.elevated),
+                          ),
+                          child: Row(
                         children: <Widget>[
                           Container(
                             width: 48,
@@ -146,6 +156,8 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                             color: DroidLabColors.mutedText,
                           ),
                         ],
+                          ),
+                        ),
                       ),
                     );
                   },
