@@ -1,0 +1,23 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+.flutter-plugins
+.flutter-plugins-dependencies
+# Android local configuration and signing secrets
+android/local.properties
+android/key.properties
+**/*.jks
+**/*.keystore
+**/*.p12
+**/*.pem
+**/secrets.properties
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
