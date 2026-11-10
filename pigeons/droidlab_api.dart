@@ -48,6 +48,23 @@ class ProjectSummaryDto {
   late String workspacePath;
 }
 
+class ApkAnalysisDto {
+  late String packageName;
+  late String applicationName;
+  String? versionName;
+  late int versionCode;
+  late int minSdk;
+  late int targetSdk;
+  late int fileSizeBytes;
+  late List<String> requestedPermissions;
+  late List<String> dexFiles;
+  late List<String> nativeLibraries;
+  late List<String> assetFiles;
+  late bool hasManifest;
+  late bool hasResourcesTable;
+  late String signatureStatus;
+}
+
 class WorkspaceFileDto {
   late String name;
   late String relativePath;
@@ -88,6 +105,9 @@ abstract class DroidLabHostApi {
 
   @async
   ExtractedPackageDto importApkFile(String sourcePath);
+
+  @async
+  ApkAnalysisDto inspectApk(String apkPath);
 
   @async
   List<ProjectSummaryDto> listProjects();
