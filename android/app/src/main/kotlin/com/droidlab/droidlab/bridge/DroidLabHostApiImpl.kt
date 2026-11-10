@@ -2,6 +2,7 @@ package com.droidlab.droidlab.bridge
 
 import android.content.Context
 import android.os.Build
+import android.content.pm.PackageManager
 import com.droidlab.droidlab.engine.InstalledAppGroup
 import com.droidlab.droidlab.engine.InstalledAppRepository
 import com.droidlab.droidlab.installation.InstallStatusReceiver
@@ -152,7 +153,9 @@ class DroidLabHostApiImpl(
 
     override suspend fun getEngineCapabilities(): List<EngineCapabilityDto> {
         val canQueryPackages = runCatching {
-            appRepository.listInstalledApps(InstalledAppGroup.ALL)
+            context.packageManager.getInstalledApplications(
+                PackageManager.GET_META_DATA
+            )
         }.isSuccess
         val installPermissionGranted = installCoordinator.canRequestInstallPackages()
         val installerSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
