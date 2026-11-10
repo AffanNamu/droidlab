@@ -46,6 +46,8 @@ class ProjectSummaryDto {
   late int originalSizeBytes;
   late int splitCount;
   late String workspacePath;
+  late String baseApkPath;
+  late List<String> splitApkPaths;
 }
 
 class ApkAnalysisDto {
