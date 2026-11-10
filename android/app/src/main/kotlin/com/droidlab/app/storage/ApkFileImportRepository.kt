@@ -47,38 +47,43 @@ class ApkFileImportRepository(
             throw IOException("Could not create the private APK workspace.")
         }
 
-        val copiedApk = File(originalDirectory, "base.apk")
-        source.inputStream().use { input ->
-            copiedApk.outputStream().use { output -> input.copyTo(output) }
-        }
+        try {
+            val copiedApk = File(originalDirectory, "base.apk")
+            source.inputStream().use { input ->
+                copiedApk.outputStream().use { output -> input.copyTo(output) }
+            }
 
-        val extracted = ExtractedPackageFiles(
-            packageName = packageInfo.packageName,
-            baseApk = copiedApk,
-            splitApks = emptyList()
-        )
-        val appSummary = InstalledAppSummary(
-            packageName = packageInfo.packageName,
-            label = context.packageManager.getApplicationLabel(applicationInfo)
-                .toString(),
-            versionName = packageInfo.versionName,
-            versionCode = packageInfo.longVersionCodeCompat(),
-            apkSizeBytes = copiedApk.length(),
-            isSystemApp = false,
-            isUpdatedSystemApp = false,
-            enabled = true,
-            firstInstallTime = 0L,
-            lastUpdateTime = 0L,
-            splitCount = 0,
-            iconPng = null
-        )
-        val project = projectRepository.recordInstalledPackage(
-            projectId = projectId,
-            app = appSummary,
-            extracted = extracted,
-            kind = "apk_file"
-        )
-        return project to extracted
+            val extracted = ExtractedPackageFiles(
+                packageName = packageInfo.packageName,
+                baseApk = copiedApk,
+                splitApks = emptyList()
+            )
+            val appSummary = InstalledAppSummary(
+                packageName = packageInfo.packageName,
+                label = context.packageManager.getApplicationLabel(applicationInfo)
+                    .toString(),
+                versionName = packageInfo.versionName,
+                versionCode = packageInfo.longVersionCodeCompat(),
+                apkSizeBytes = copiedApk.length(),
+                isSystemApp = false,
+                isUpdatedSystemApp = false,
+                enabled = true,
+                firstInstallTime = 0L,
+                lastUpdateTime = 0L,
+                splitCount = 0,
+                iconPng = null
+            )
+            val project = projectRepository.recordInstalledPackage(
+                projectId = projectId,
+                app = appSummary,
+                extracted = extracted,
+                kind = "apk_file"
+            )
+            return project to extracted
+        } catch (error: Exception) {
+            File(context.filesDir, "projects/$projectId").deleteRecursively()
+            throw error
+        }
     }
 
     @Suppress("DEPRECATION")
