@@ -1,7 +1,6 @@
 package com.droidlab.droidlab.bridge
 
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import com.droidlab.droidlab.engine.InstalledAppGroup
 import com.droidlab.droidlab.engine.InstalledAppRepository
@@ -65,6 +64,8 @@ class DroidLabHostApiImpl(
         val canQueryPackages = runCatching {
             appRepository.listInstalledApps(InstalledAppGroup.ALL)
         }.isSuccess
+        val installPermissionGranted = installCoordinator.canRequestInstallPackages()
+        val installerSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
         return listOf(
             capability(
@@ -80,11 +81,13 @@ class DroidLabHostApiImpl(
             capability(
                 id = "package-installer",
                 name = "Android package installer",
-                ready = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O,
-                detail = if (installCoordinator.canRequestInstallPackages()) {
-                    "Android install permission is enabled."
-                } else {
-                    "User approval in Android settings is required before installing APKs."
+                ready = installerSupported && installPermissionGranted,
+                detail = when {
+                    !installerSupported ->
+                        "Android 8.0 or newer is required."
+                    !installPermissionGranted ->
+                        "User approval in Android settings is required before installing APKs."
+                    else -> "Android PackageInstaller is available."
                 }
             ),
             capability(
@@ -120,8 +123,7 @@ class DroidLabHostApiImpl(
 
     override suspend fun openInstallPermissionSettings(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
-        val intent = installCoordinator.createInstallPermissionIntent()
-        context.startActivity(intent)
+        context.startActivity(installCoordinator.createInstallPermissionIntent())
         return true
     }
 
@@ -160,7 +162,9 @@ class DroidLabHostApiImpl(
         val candidate = File(path).canonicalFile
         val rootPrefix = root.path + File.separator
         if (!candidate.path.startsWith(rootPrefix)) {
-            throw SecurityException("The requested file is outside DroidLab's private workspace.")
+            throw SecurityException(
+                "The requested file is outside DroidLab's private workspace."
+            )
         }
         return candidate
     }
