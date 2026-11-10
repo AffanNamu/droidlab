@@ -68,22 +68,27 @@ class DroidLabHostApiImpl(
             context.filesDir,
             "projects/$projectId/original"
         )
-        val extracted = appRepository.extractPackage(
-            packageName = packageName,
-            destinationDirectory = originalDirectory
-        )
-        val project = projectRepository.recordInstalledPackage(
-            projectId = projectId,
-            app = app,
-            extracted = extracted
-        )
+        try {
+            val extracted = appRepository.extractPackage(
+                packageName = packageName,
+                destinationDirectory = originalDirectory
+            )
+            val project = projectRepository.recordInstalledPackage(
+                projectId = projectId,
+                app = app,
+                extracted = extracted
+            )
 
-        return ExtractedPackageDto().apply {
-            this.projectId = project.projectId
-            this.packageName = project.packageName
-            workspacePath = project.workspacePath
-            baseApkPath = extracted.baseApk.absolutePath
-            splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
+            return ExtractedPackageDto().apply {
+                this.projectId = project.projectId
+                this.packageName = project.packageName
+                workspacePath = project.workspacePath
+                baseApkPath = extracted.baseApk.absolutePath
+                splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
+            }
+        } catch (error: Exception) {
+            File(context.filesDir, "projects/$projectId").deleteRecursively()
+            throw error
         }
     }
 
