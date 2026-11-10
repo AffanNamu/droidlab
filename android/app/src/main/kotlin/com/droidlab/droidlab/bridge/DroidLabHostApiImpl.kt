@@ -6,6 +6,7 @@ import com.droidlab.droidlab.engine.InstalledAppGroup
 import com.droidlab.droidlab.engine.InstalledAppRepository
 import com.droidlab.droidlab.installation.InstallStatusReceiver
 import com.droidlab.droidlab.installation.PackageInstallCoordinator
+import com.droidlab.droidlab.storage.ProjectWorkspaceRepository
 import java.io.File
 import java.util.UUID
 
@@ -18,6 +19,7 @@ class DroidLabHostApiImpl(
 ) : DroidLabHostApi {
 
     private val appRepository = InstalledAppRepository(context)
+    private val projectRepository = ProjectWorkspaceRepository(context)
     private val installCoordinator = PackageInstallCoordinator(context)
 
     override suspend fun listInstalledApps(group: String): List<InstalledAppDto> {
@@ -49,21 +51,48 @@ class DroidLabHostApiImpl(
     override suspend fun extractInstalledApp(
         packageName: String
     ): ExtractedPackageDto {
+        val app = appRepository.listInstalledApps(InstalledAppGroup.ALL)
+            .firstOrNull { it.packageName == packageName }
+            ?: throw IllegalArgumentException("The selected application is no longer available.")
+
         val projectId = UUID.randomUUID().toString()
-        val workspace = File(
+        val originalDirectory = File(
             context.filesDir,
             "projects/$projectId/original"
         )
         val extracted = appRepository.extractPackage(
             packageName = packageName,
-            destinationDirectory = workspace
+            destinationDirectory = originalDirectory
         )
+        val project = projectRepository.recordInstalledPackage(
+            projectId = projectId,
+            app = app,
+            extracted = extracted
+        )
+
         return ExtractedPackageDto().apply {
-            this.projectId = projectId
-            this.packageName = extracted.packageName
-            workspacePath = workspace.absolutePath
+            this.projectId = project.projectId
+            this.packageName = project.packageName
+            workspacePath = project.workspacePath
             baseApkPath = extracted.baseApk.absolutePath
             splitApkPaths = extracted.splitApks.map(File::getAbsolutePath)
+        }
+    }
+
+    override suspend fun listProjects(): List<ProjectSummaryDto> {
+        return projectRepository.listProjects().map { project ->
+            ProjectSummaryDto().apply {
+                projectId = project.projectId
+                name = project.name
+                kind = project.kind
+                packageName = project.packageName
+                versionName = project.versionName
+                versionCode = project.versionCode
+                importedAtEpochMillis = project.importedAtEpochMillis
+                originalSizeBytes = project.originalSizeBytes
+                splitCount = project.splitCount
+                workspacePath = project.workspacePath
+            }
         }
     }
 
