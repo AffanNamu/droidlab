@@ -23,7 +23,7 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Generate Android platform scaffold
+      - name: Generate clean Android platform scaffold
         run: |
           mkdir -p /tmp/droidlab-preserve
           if [ -d android/app/src/main/kotlin/com/droidlab/droidlab ]; then
@@ -32,7 +32,9 @@ jobs:
           if [ -f android/app/src/main/AndroidManifest.xml ]; then
             cp android/app/src/main/AndroidManifest.xml /tmp/droidlab-preserve/AndroidManifest.xml
           fi
-          flutter create --platforms=android --org=com.droidlab --project-name=droidlab .
+          flutter create --platforms=android --org=com.droidlab --project-name=droidlab /tmp/droidlab-platform
+          rm -rf android
+          cp -R /tmp/droidlab-platform/android ./android
           if [ -d /tmp/droidlab-preserve/kotlin ]; then
             rm -rf android/app/src/main/kotlin/com/droidlab/droidlab
             mkdir -p android/app/src/main/kotlin/com/droidlab
