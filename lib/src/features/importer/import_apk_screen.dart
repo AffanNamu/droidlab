@@ -90,31 +90,28 @@ class _ImportApkScreenState extends State<ImportApkScreen> {
     setState(() => _isImporting = true);
 
     var imported = 0;
-    try {
-      for (final packageName in _selectedPackages.toList()) {
+    final failures = <String>[];
+    for (final packageName in _selectedPackages.toList()) {
+      try {
         await _api.extractInstalledApp(packageName);
         imported++;
+      } catch (error) {
+        failures.add('$packageName: $error');
       }
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Imported $imported application(s) into the private workspace.',
-          ),
-        ),
-      );
-      setState(() {
-        _selectedPackages.clear();
-        _appsFuture = _loadApps();
-      });
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Import failed: $error')),
-      );
-    } finally {
-      if (mounted) setState(() => _isImporting = false);
     }
+
+    if (!mounted) return;
+    final message = failures.isEmpty
+        ? 'Imported $imported application(s) into Projects.'
+        : 'Imported $imported; failed ${failures.length}. ${failures.first}';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+    setState(() {
+      _selectedPackages.clear();
+      _appsFuture = _loadApps();
+      _isImporting = false;
+    });
   }
 
   @override
