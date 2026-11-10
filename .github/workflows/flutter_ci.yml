@@ -32,7 +32,7 @@ jobs:
           if [ -f android/app/src/main/AndroidManifest.xml ]; then
             cp android/app/src/main/AndroidManifest.xml /tmp/droidlab-preserve/AndroidManifest.xml
           fi
-          flutter create --platforms=android --org=com.droidlab --project-name=droidlab /tmp/droidlab-platform
+          flutter create --platforms=android --org=com.droidlab --project-name=app /tmp/droidlab-platform
           rm -rf android
           cp -R /tmp/droidlab-platform/android ./android
           if [ -d /tmp/droidlab-preserve/kotlin ]; then
