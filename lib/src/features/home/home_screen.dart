@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../navigation/app_shell.dart';
 import '../../theme/droidlab_theme.dart';
 import '../importer/import_apk_screen.dart';
+import 'engine_status_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -132,12 +133,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                 ),
                 const SizedBox(height: 10),
-                const EmptyStatePanel(
-                  icon: Icons.memory_rounded,
-                  title: 'Native engine foundation',
-                  description:
-                      'Engine readiness will be detected from this device. No tools are marked ready until verified.',
-                ),
+                const EngineStatusCard(),
               ],
             ),
           ),
