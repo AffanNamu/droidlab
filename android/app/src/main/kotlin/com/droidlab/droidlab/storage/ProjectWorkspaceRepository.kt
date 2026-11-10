@@ -43,6 +43,7 @@ class ProjectWorkspaceRepository(
         projectId: String,
         app: InstalledAppSummary,
         extracted: ExtractedPackageFiles,
+        kind: String = "installed_apk",
         importedAtEpochMillis: Long = System.currentTimeMillis()
     ): LocalProjectSummary {
         val projectDirectory = safeProjectDirectory(projectId)
@@ -60,7 +61,7 @@ class ProjectWorkspaceRepository(
         val metadata = JSONObject()
             .put("projectId", projectId)
             .put("name", app.label)
-            .put("kind", "installed_apk")
+            .put("kind", kind)
             .put("packageName", app.packageName)
             .put("versionName", app.versionName ?: JSONObject.NULL)
             .put("versionCode", app.versionCode)
@@ -82,7 +83,7 @@ class ProjectWorkspaceRepository(
         return LocalProjectSummary(
             projectId = projectId,
             name = app.label,
-            kind = "installed_apk",
+            kind = kind,
             packageName = app.packageName,
             versionName = app.versionName,
             versionCode = app.versionCode,
