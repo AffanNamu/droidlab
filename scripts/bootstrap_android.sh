@@ -11,10 +11,10 @@ if [[ ! -f pubspec.yaml ]]; then
   exit 1
 fi
 
-if [[ ! -d android ]]; then
+if [[ ! -f android/app/build.gradle.kts && ! -f android/app/build.gradle ]]; then
   flutter create --platforms=android --org=com.droidlab --project-name=droidlab .
 else
-  echo "Android platform directory already exists; leaving it unchanged."
+  echo "Android Gradle project already exists; leaving generated files unchanged."
 fi
 
 flutter pub get
